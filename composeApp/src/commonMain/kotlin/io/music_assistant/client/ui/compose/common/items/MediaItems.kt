@@ -535,7 +535,7 @@ fun PodcastImage(
             val center = cutSize.toPx() * 0.7f
             val spacing = center / circleCount
 
-            for (i in 1..circleCount - 1) {
+            for (i in 1 until circleCount) {
                 drawCircle(
                     color = primary,
                     radius = i * spacing,

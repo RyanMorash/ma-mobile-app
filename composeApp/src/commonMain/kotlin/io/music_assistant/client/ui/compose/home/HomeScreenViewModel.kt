@@ -247,6 +247,7 @@ class HomeScreenViewModel(
         }
     }
 
+    fun refreshPlayers() = dataSource.refreshPlayersAndQueues()
     fun selectPlayer(player: Player) = dataSource.selectPlayer(player)
     fun playerAction(playerId: String, action: PlayerAction) = dataSource.playerAction(playerId, action)
     fun playerAction(data: PlayerData, action: PlayerAction) = dataSource.playerAction(data, action)

@@ -25,6 +25,8 @@ import androidx.compose.foundation.pager.PagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.VolumeMute
 import androidx.compose.material.icons.automirrored.filled.VolumeUp
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -64,6 +66,7 @@ internal fun PlayersPager(
     serverUrl: String?,
     simplePlayerAction: (String, PlayerAction) -> Unit,
     playerAction: (PlayerData, PlayerAction) -> Unit,
+    onPlayersRefreshClick: () -> Unit,
     onFavoriteClick: (AppMediaItem) -> Unit,
     showQueue: Boolean,
     isQueueExpanded: Boolean,
@@ -76,12 +79,42 @@ internal fun PlayersPager(
 ) {
     // Extract playerData list to ensure proper recomposition
     val playerDataList = playersState.playerData
+    val coroutineScope = rememberCoroutineScope()
+
+    fun moveToPlayer(playerId: String) {
+        val targetIndex =
+            playerDataList.indexOfFirst { it.player.id == playerId }
+        if (targetIndex != -1) {
+            coroutineScope.launch {
+                playerPagerState.animateScrollToPage(targetIndex)
+            }
+        }
+    }
+
+    var playersListVisible by remember { mutableStateOf(false) }
 
     Column(modifier = modifier) {
         HorizontalPagerIndicator(
             pagerState = playerPagerState,
-            onItemMoved = onItemMoved
+            onItemMoved = onItemMoved,
+            onRefreshClick = onPlayersRefreshClick,
+            onShowListClick = { playersListVisible = true },
         )
+        DropdownMenu(
+            expanded = playersListVisible,
+            onDismissRequest = { playersListVisible = false }
+        ) {
+            playerDataList.forEach { data ->
+                val isLocalPlayer = data.playerId == playersState.localPlayerId
+                DropdownMenuItem(
+                    text = { Text(text = data.player.displayName + (if (isLocalPlayer) " (local)" else "")) },
+                    onClick = {
+                        moveToPlayer(data.player.id)
+                        playersListVisible = false
+                    }
+                )
+            }
+        }
         HorizontalPager(
             modifier = Modifier.wrapContentHeight(),
             state = playerPagerState,
@@ -115,7 +148,7 @@ internal fun PlayersPager(
                 ) {
                     Text(
                         modifier = Modifier.align(Alignment.Center),
-                        text = if (isLocalPlayer) "Local player" else player.player.displayName,
+                        text = player.player.displayName + (if (isLocalPlayer) " (local)" else ""),
                         style = MaterialTheme.typography.bodyLarge,
                         textAlign = TextAlign.Center,
                         fontWeight = FontWeight.Medium,
@@ -267,7 +300,6 @@ internal fun PlayersPager(
                 Spacer(modifier = Modifier.fillMaxWidth().height(8.dp))
 
                 player.queue.takeIf { showQueue }?.let { queue ->
-                    val coroutineScope = rememberCoroutineScope()
                     CollapsibleQueue(
                         modifier = Modifier
                             .conditional(
@@ -283,13 +315,7 @@ internal fun PlayersPager(
                         queueAction = queueAction,
                         players = playerDataList,
                         onPlayerSelected = { playerId ->
-                            val targetIndex =
-                                playerDataList.indexOfFirst { it.player.id == playerId }
-                            if (targetIndex != -1) {
-                                coroutineScope.launch {
-                                    playerPagerState.animateScrollToPage(targetIndex)
-                                }
-                            }
+                            moveToPlayer(playerId)
                         },
                         isCurrentPage = page == playerPagerState.currentPage
                     )

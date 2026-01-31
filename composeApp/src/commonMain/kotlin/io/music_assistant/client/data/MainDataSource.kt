@@ -1070,4 +1070,6 @@ class MainDataSource(
         supervisorJob.cancel()
     }
 
+    fun refreshPlayersAndQueues() = updatePlayersAndQueues()
+
 }
