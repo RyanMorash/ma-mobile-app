@@ -367,12 +367,11 @@ private fun HeaderSection(
             ) {
 
                 Button(
-                    onClick = { onPlayClick(QueueOption.PLAY) },
+                    onClick = { onPlayClick(QueueOption.REPLACE) },
                     modifier = Modifier.weight(1f)
                 ) {
                     Icon(Icons.Default.PlayArrow, null)
                     Spacer(Modifier.width(4.dp))
-                    Text("Play now")
                 }
 
                 OverflowMenu(
@@ -385,9 +384,9 @@ private fun HeaderSection(
                         )
                     },
                     options = buildList {
-                        add(OverflowMenuOption("Play Next") { onPlayClick(QueueOption.NEXT) })
-                        add(OverflowMenuOption("Add to Queue") { onPlayClick(QueueOption.ADD) })
-                        add(OverflowMenuOption("Replace Queue") { onPlayClick(QueueOption.REPLACE) })
+                        add(OverflowMenuOption("Add and play") { onPlayClick(QueueOption.PLAY) })
+                        add(OverflowMenuOption("Add and play next") { onPlayClick(QueueOption.NEXT) })
+                        add(OverflowMenuOption("Add to bottom") { onPlayClick(QueueOption.ADD) })
                         add(
                             OverflowMenuOption(
                                 if (item.isInLibrary) "Remove from library"

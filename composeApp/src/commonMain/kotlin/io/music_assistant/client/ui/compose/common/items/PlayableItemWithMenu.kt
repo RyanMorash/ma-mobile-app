@@ -188,30 +188,30 @@ private fun PlayableItemWithMenu(
             onDismissRequest = { expandedTrackId = null }
         ) {
             DropdownMenuItem(
-                text = { Text("Play Now") },
+                text = { Text("Play now") },
+                onClick = {
+                    onTrackPlayOption(item, QueueOption.REPLACE)
+                    expandedTrackId = null
+                }
+            )
+            DropdownMenuItem(
+                text = { Text("Add and play") },
                 onClick = {
                     onTrackPlayOption(item, QueueOption.PLAY)
                     expandedTrackId = null
                 }
             )
             DropdownMenuItem(
-                text = { Text("Play Next") },
+                text = { Text("Add and play next") },
                 onClick = {
                     onTrackPlayOption(item, QueueOption.NEXT)
                     expandedTrackId = null
                 }
             )
             DropdownMenuItem(
-                text = { Text("Add to Queue") },
+                text = { Text("Add to bottom") },
                 onClick = {
                     onTrackPlayOption(item, QueueOption.ADD)
-                    expandedTrackId = null
-                }
-            )
-            DropdownMenuItem(
-                text = { Text("Replace Queue") },
-                onClick = {
-                    onTrackPlayOption(item, QueueOption.REPLACE)
                     expandedTrackId = null
                 }
             )
